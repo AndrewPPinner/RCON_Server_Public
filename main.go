@@ -45,6 +45,8 @@ func main() {
 	smartHome.Use(Middleware.JwtAuthMiddleware())
 
 	smartHome.POST("/open_garage", Controllers.OpenGarage)
+	smartHome.POST("/saveSensor", Controllers.SaveReading)
+	smartHome.GET("/getSensorValues", Controllers.GetSensorValues)
 
 	r.Run(":6969")
 

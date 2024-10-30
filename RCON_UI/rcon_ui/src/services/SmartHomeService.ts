@@ -8,11 +8,22 @@ const baseUri = "https://andrewp.online/smart/api/"
 
 class SmartHomeService {
     async OpenGarage() {
-        await axios.post(`${baseUri}open_garage`, null, { headers: authHeader()})
-        .catch(e => {
-          store.dispatch("addError", e.message)
-        });
-      }
+      await axios.post(`${baseUri}open_garage`, null, { headers: authHeader()})
+      .catch(e => {
+        store.dispatch("addError", e.message)
+      });
+    }
+
+    async GetSensorValues() {
+      return await axios.get(`${baseUri}getSensorValues`, { headers: authHeader()})
+      .then(res => {
+        return res.data.Response;
+      }) 
+      .catch(e => {
+        store.dispatch("addError", e.message);
+      });
+
+    } 
 }
 
 function authHeader() {

@@ -35,4 +35,5 @@ func ConnectToDatabase() {
 	}
 
 	Database.AutoMigrate(&User{})
+	Database.AutoMigrate(&SensorData{})
 }

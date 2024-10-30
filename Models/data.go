@@ -15,6 +15,14 @@ type User struct {
 	HashedPassword string `gorm:"size:255;not null"`
 }
 
+type SensorData struct {
+	gorm.Model
+	SensorValue float32 `gorm:"not null"`
+	//Could probably normalize this but, eh
+	SensorLocation string `gorm:"size:255;not null"`
+	SensorType     string `gorm:"size:255;not null"`
+}
+
 func (authRequest *AuthRequest) CreateUser() error {
 	u := User{Username: authRequest.Username, HashedPassword: authRequest.Password}
 	err := Database.Create(&u).Error
@@ -70,4 +78,26 @@ func (user *User) BeforeSave(tx *gorm.DB) error {
 	user.Username = html.EscapeString(strings.TrimSpace(user.Username))
 
 	return nil
+}
+
+func SaveReading(request SensorRequest) error {
+	data := SensorData{SensorValue: request.SensorValue, SensorLocation: request.Location, SensorType: request.SensorType}
+
+	err := Database.Create(&data).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetSensorData() (*[]SensorData, error) {
+	data := []SensorData{}
+	err := Database.Raw("select DISTINCT ON (sensor_type) * from sensor_data order by sensor_type, created_at desc;").Scan(&data).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
 }

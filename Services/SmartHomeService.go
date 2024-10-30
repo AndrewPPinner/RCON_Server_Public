@@ -1,6 +1,7 @@
 package services
 
 import (
+	Models "RCON_Server/Models"
 	"fmt"
 	"net/http"
 	"time"
@@ -25,4 +26,24 @@ func OpenGarage() error {
 	}
 	defer res.Body.Close()
 	return nil
+}
+
+func SaveSensorReading(req Models.SensorRequest) error {
+	err := Models.SaveReading(req)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetSensorValues() (*[]Models.SensorData, error) {
+	data, err := Models.GetSensorData()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
