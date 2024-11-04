@@ -9,17 +9,30 @@ const baseUri = "https://andrewp.online/smart/api/"
 class SmartHomeService {
     async OpenGarage() {
       await axios.post(`${baseUri}open_garage`, null, { headers: authHeader()})
-      .catch(e => {
+      .catch((e: { message: any; }) => {
         store.dispatch("addError", e.message)
       });
     }
 
     async GetSensorValues() {
       return await axios.get(`${baseUri}getSensorValues`, { headers: authHeader()})
-      .then(res => {
+      .then((res: { data: { Response: any; }; }) => {
         return res.data.Response;
       }) 
-      .catch(e => {
+      .catch((e: { message: any; }) => {
+        store.dispatch("addError", e.message);
+      });
+
+    }
+
+    async GetSensorDataGraph(location : string, type : string) : Promise<Array<any>> {
+      const request =  {Location: location, Type: type};
+
+      return await axios.post(`${baseUri}getSensorGraphData`, request, { headers: authHeader()})
+      .then((res: { data: { Response: any; }; }) => {
+        return res.data.Response;
+      }) 
+      .catch((e: { message: any; }) => {
         store.dispatch("addError", e.message);
       });
 

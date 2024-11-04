@@ -47,3 +47,22 @@ func GetSensorValues(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"Response": values})
 }
+
+func GetSensorDataGraph(c *gin.Context) {
+	var request = new(Models.SensorGraphRequest)
+
+	if err := c.ShouldBindJSON(request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"Response": err.Error()})
+		return
+	}
+
+	values, err := services.GetSensorDataGraph(request.Location, request.Type)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"Response": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"Response": values})
+}

@@ -47,6 +47,7 @@ func main() {
 	smartHome.POST("/open_garage", Controllers.OpenGarage)
 	smartHome.POST("/saveSensor", Controllers.SaveReading)
 	smartHome.GET("/getSensorValues", Controllers.GetSensorValues)
+	smartHome.POST("/getSensorGraphData", Controllers.GetSensorDataGraph)
 
 	r.Run(":6969")
 

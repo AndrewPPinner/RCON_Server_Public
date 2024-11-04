@@ -17,7 +17,7 @@ type User struct {
 
 type SensorData struct {
 	gorm.Model
-	SensorValue float32 `gorm:"not null"`
+	SensorValue int `gorm:"not null"`
 	//Could probably normalize this but, eh
 	SensorLocation string `gorm:"size:255;not null"`
 	SensorType     string `gorm:"size:255;not null"`
@@ -91,9 +91,20 @@ func SaveReading(request SensorRequest) error {
 	return nil
 }
 
-func GetSensorData() (*[]SensorData, error) {
+func GetAllRecentSensorData() (*[]SensorData, error) {
 	data := []SensorData{}
-	err := Database.Raw("select DISTINCT ON (sensor_type) * from sensor_data order by sensor_type, created_at desc;").Scan(&data).Error
+	err := Database.Raw("SELECT distinct on (sensor_type, sensor_location) * FROM sensor_data order by sensor_type, sensor_location, created_at desc;").Scan(&data).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func GetSensorDataGraph(sensorType string, sensorLocation string) (*[]SensorData, error) {
+	data := []SensorData{}
+	err := Database.Raw("SELECT * FROM sensor_data where sensor_location = ? AND sensor_type = ? order by created_at desc;", sensorLocation, sensorType).Scan(&data).Error
 
 	if err != nil {
 		return nil, err

@@ -39,11 +39,36 @@ func SaveSensorReading(req Models.SensorRequest) error {
 }
 
 func GetSensorValues() (*[]Models.SensorData, error) {
-	data, err := Models.GetSensorData()
+	data, err := Models.GetAllRecentSensorData()
 
 	if err != nil {
 		return nil, err
 	}
 
 	return data, nil
+}
+
+func GetSensorDataGraph(sensorLocation string, sensorType string) (*[]Models.SensorDataGraphResponse, error) {
+	data, err := Models.GetSensorDataGraph(sensorType, sensorLocation)
+	dateMap := make(map[string]Models.Pair[int, int])
+	response := []Models.SensorDataGraphResponse{}
+
+	for _, value := range *data {
+		date := value.CreatedAt.Format(time.DateOnly)
+		pair := dateMap[date]
+		pair.First += value.SensorValue
+		pair.Second++
+		dateMap[date] = pair
+	}
+
+	for date, v := range dateMap {
+
+		response = append(response, Models.SensorDataGraphResponse{SensorValue: (v.First / v.Second), Date: date})
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
 }
